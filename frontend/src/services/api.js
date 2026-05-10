@@ -24,6 +24,12 @@ export const loginUser = async (username, password) => {
     return response.data; // Returns { token, username }
 };
 
+export const registerUser = async (username, password) => {
+    // Notice we use the raw axios here, not apiClient, because we don't need a token to register!
+    const response = await axios.post(`${API_URL}/auth/register`, { username, password });
+    return response.data; 
+};
+
 // --- POSTS ---
 export const getPosts = async (page = 0, size = 10) => {
     const response = await apiClient.get(`/posts?page=${page}&size=${size}`);
