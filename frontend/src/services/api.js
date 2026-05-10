@@ -46,6 +46,16 @@ export const createPost = async (postData) => {
     return response.data;
 };
 
+export const updatePost = async (id, postData) => {
+    const response = await apiClient.put(`/posts/${id}`, postData);
+    return response.data;
+};
+
+export const deletePost = async (id) => {
+    const response = await apiClient.delete(`/posts/${id}`);
+    return response.data;
+};
+
 // --- COMMENTS ---
 export const getComments = async (postId, page = 0, size = 10) => {
     const response = await apiClient.get(`/posts/${postId}/comments?page=${page}&size=${size}`);

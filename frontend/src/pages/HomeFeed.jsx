@@ -33,7 +33,7 @@ const [liveCounts, setLiveCounts] = useState({});
     import('../services/api').then(({ getGlobalLiveCounts }) => {
         getGlobalLiveCounts().then(setLiveCounts);
     });
-    
+
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClient.debug = null;
@@ -59,6 +59,17 @@ const [liveCounts, setLiveCounts] = useState({});
 
   return (
     <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px' }}>
+
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+       
+        {localStorage.getItem('username') && (
+          <Link to="/create-post">
+            <button>+ Create Post</button>
+          </Link>
+        )}
+      </div>
+
       <h1>Latest Posts</h1>
       
       {posts.length === 0 ? (

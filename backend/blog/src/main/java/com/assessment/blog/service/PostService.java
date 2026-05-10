@@ -34,6 +34,8 @@ public class PostService {
 
         post.setTitle(postDetails.getTitle());
         post.setBody(postDetails.getBody());
+        post.setCategory(postDetails.getCategory());
+        post.setTags(postDetails.getTags());
         // Note: We don't update the author or timestamp!
 
         return postRepository.save(post);
