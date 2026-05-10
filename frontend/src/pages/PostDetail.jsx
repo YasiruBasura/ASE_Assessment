@@ -11,6 +11,7 @@ function PostDetail() {
   const [comments, setComments] = useState([]);
   
   const [newCommentText, setNewCommentText] = useState('');
+  const [readerCount, setReaderCount] = useState(1); // Defaults to 1 (since you are reading it!)
 
   const fetchPostAndComments = useCallback(async () => {
     try {
@@ -40,8 +41,14 @@ function PostDetail() {
       
       stompClient.subscribe(`/topic/posts/${id}/comments`, (message) => {
         console.log("📡 Live Broadcast Received!");
-        // Instantly refresh the comments when a broadcast arrives!
+      // 1. Instantly refresh the comments when a broadcast arrives!
         fetchPostAndComments(); 
+      });
+
+      // 2. Listen for live reader count updates (ADD THIS BLOCK)
+      stompClient.subscribe(`/topic/posts/${id}/readers`, (message) => {
+        console.log("👁️ Reader count updated:", message.body);
+        setReaderCount(parseInt(message.body));
       });
     }, (error) => {
       console.error("🔴 WebSocket Connection Error:", error);
@@ -83,7 +90,14 @@ function PostDetail() {
     <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px' }}>
       <div style={{ padding: '30px', backgroundColor: 'var(--surface-color)', borderRadius: '8px' }}>
         <h1 style={{ color: 'var(--accent-color)' }}>{post.title}</h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>By {post.author} • {new Date(post.timestamp).toLocaleDateString()}</p>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>By {post.author} • {new Date(post.timestamp).toLocaleDateString()}
+          
+          {/* Live Reader Badge */}
+          <span style={{ backgroundColor: 'rgba(187, 134, 252, 0.1)', color: 'var(--accent-color)', padding: '4px 10px', borderRadius: '15px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', backgroundColor: 'var(--accent-color)', borderRadius: '50%', animation: 'pulse 2s infinite' }}></span>
+            {readerCount} {readerCount === 1 ? 'person' : 'people'} viewing
+          </span>
+        </p>
         <div style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>{post.body}</div>
       </div>
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getPosts } from '../services/api';
 import { Link } from 'react-router-dom';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 
 function HomeFeed() {
   const [posts, setPosts] = useState([]);
@@ -21,6 +23,30 @@ function HomeFeed() {
     }
   };
 
+  
+const [liveCounts, setLiveCounts] = useState({});
+
+  // --- WEBSOCKET FOR GLOBAL COUNTS ---
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/ws');
+    const stompClient = Stomp.over(socket);
+    stompClient.debug = null;
+
+    stompClient.connect({}, () => {
+      // Listen to the new global channel
+      stompClient.subscribe('/topic/readers/all', (message) => {
+        const countsMap = JSON.parse(message.body);
+        setLiveCounts(countsMap);
+      });
+    });
+
+    return () => {
+      if (stompClient.connected) {
+        stompClient.disconnect();
+      }
+    };
+  }, []);
+
   if (loading) {
     return <div style={{ textAlign: 'center', marginTop: '100px' }}>Loading posts...</div>;
   }
@@ -40,6 +66,14 @@ function HomeFeed() {
             
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '15px' }}>
               By {post.author} in {post.category} • {new Date(post.timestamp).toLocaleDateString()}
+            
+            {/* Live Reader Badge for the Home Feed */}
+            {liveCounts[post.id] > 0 && (
+              <span style={{ backgroundColor: 'rgba(187, 134, 252, 0.1)', color: 'var(--accent-color)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ display: 'inline-block', width: '6px', height: '6px', backgroundColor: 'var(--accent-color)', borderRadius: '50%', animation: 'pulse 2s infinite' }}></span>
+                {liveCounts[post.id]} viewing
+              </span>
+            )}
             </p>
             
             <p>{post.body}</p>
