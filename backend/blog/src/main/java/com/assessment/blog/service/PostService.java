@@ -28,4 +28,20 @@ public class PostService {
         return postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
     }
+    public Post updatePost(Long id, Post postDetails) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        post.setTitle(postDetails.getTitle());
+        post.setBody(postDetails.getBody());
+        // Note: We don't update the author or timestamp!
+
+        return postRepository.save(post);
+    }
+
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
+    }
+
+
 }

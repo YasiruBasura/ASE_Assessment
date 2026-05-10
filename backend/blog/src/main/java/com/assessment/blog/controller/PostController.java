@@ -3,6 +3,7 @@ package com.assessment.blog.controller;
 import com.assessment.blog.entity.Post;
 import com.assessment.blog.service.PostService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,5 +35,16 @@ public class PostController {
     @PostMapping
     public Post createPost(@RequestBody Post post) {
         return postService.createPost(post);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
+        return ResponseEntity.ok(postService.updatePost(id, post));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.ok("Post deleted successfully");
     }
 }

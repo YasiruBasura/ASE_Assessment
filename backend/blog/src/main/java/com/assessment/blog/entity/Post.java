@@ -5,6 +5,8 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data // Lombok handles getters, setters, and constructors
@@ -32,4 +34,9 @@ public class Post {
 
     @CreationTimestamp
     private LocalDateTime timestamp; // Auto-generates the creation time
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // This prevents a massive infinite loop when sending data to React!
+    private List<Comment> comments = new ArrayList<>();
+
 }
