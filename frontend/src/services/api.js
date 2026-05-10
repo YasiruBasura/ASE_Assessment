@@ -1,45 +1,52 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/posts';
+const API_URL = 'http://localhost:8080/api';
 
-// Fetch paginated posts
+// Create an Axios instance
+const apiClient = axios.create({
+    baseURL: API_URL,
+});
+
+// Intercept requests to attach the token
+apiClient.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
+// --- AUTHENTICATION ---
+export const loginUser = async (username, password) => {
+    const response = await axios.post(`${API_URL}/auth/login`, { username, password });
+    return response.data; // Returns { token, username }
+};
+
+// --- POSTS ---
 export const getPosts = async (page = 0, size = 10) => {
-    try {
-        const response = await axios.get(`${API_URL}?page=${page}&size=${size}`);
-        return response.data; // Spring Boot returns the data here
-    } catch (error) {
-        console.error("Error fetching posts:", error);
-        throw error;
-    }
+    const response = await apiClient.get(`/posts?page=${page}&size=${size}`);
+    return response.data;
 };
 
-// Create a new post
-export const createPost = async (postData) => {
-    try {
-        const response = await axios.post(API_URL, postData);
-        return response.data;
-    } catch (error) {
-        console.error("Error creating post:", error);
-        throw error;
-    }
-};
-
-// Add this below your existing functions
-
-// Fetch a single post
 export const getPostById = async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`);
+    const response = await apiClient.get(`/posts/${id}`);
     return response.data;
 };
 
-// Fetch nested comments for a post
+export const createPost = async (postData) => {
+    const response = await apiClient.post('/posts', postData);
+    return response.data;
+};
+
+// --- COMMENTS ---
 export const getComments = async (postId, page = 0, size = 10) => {
-    const response = await axios.get(`${API_URL}/${postId}/comments?page=${page}&size=${size}`);
+    const response = await apiClient.get(`/posts/${postId}/comments?page=${page}&size=${size}`);
     return response.data;
 };
 
-// Create a new comment (or reply if parentId is provided)
 export const createComment = async (postId, commentData) => {
-    const response = await axios.post(`${API_URL}/${postId}/comments`, commentData);
+    const response = await apiClient.post(`/posts/${postId}/comments`, commentData);
     return response.data;
 };

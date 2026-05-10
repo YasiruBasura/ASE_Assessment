@@ -10,7 +10,7 @@ function PostDetail() {
   
   // State for top-level comment form
   const [newCommentText, setNewCommentText] = useState('');
-  const [newCommentAuthor, setNewCommentAuthor] = useState('');
+//   const [newCommentAuthor, setNewCommentAuthor] = useState('');
 
   const fetchPostAndComments = useCallback(async () => {
     try {
@@ -28,13 +28,19 @@ function PostDetail() {
     fetchPostAndComments();
   }, [fetchPostAndComments]);
 
-  const handleTopLevelCommentSubmit = async (e) => {
+const handleTopLevelCommentSubmit = async (e) => {
     e.preventDefault();
+    const currentUser = localStorage.getItem('username'); // Get it from storage!
+    
+    if (!currentUser) {
+        alert("You must be logged in to comment.");
+        return;
+    }
+
     try {
-      await createComment(id, { text: newCommentText, author: newCommentAuthor });
+      await createComment(id, { text: newCommentText, author: currentUser });
       setNewCommentText('');
-      setNewCommentAuthor('');
-      fetchPostAndComments(); // Refresh the list
+      fetchPostAndComments();
     } catch (error) {
       console.error("Failed to post comment");
     }
@@ -58,7 +64,7 @@ function PostDetail() {
         {/* Top-Level Comment Form */}
         <form onSubmit={handleTopLevelCommentSubmit} style={{ marginTop: '20px', marginBottom: '40px', display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px', backgroundColor: 'var(--surface-color)', borderRadius: '8px' }}>
           <h4>Leave a comment</h4>
-          <input type="text" placeholder="Your Name" value={newCommentAuthor} onChange={(e) => setNewCommentAuthor(e.target.value)} required style={{ padding: '10px', background: 'var(--bg-color)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+          {/* <input type="text" placeholder="Your Name" value={newCommentAuthor} onChange={(e) => setNewCommentAuthor(e.target.value)} required style={{ padding: '10px', background: 'var(--bg-color)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '4px' }} /> */}
           <textarea placeholder="What are your thoughts?" value={newCommentText} onChange={(e) => setNewCommentText(e.target.value)} required style={{ padding: '10px', background: 'var(--bg-color)', color: 'white', border: '1px solid var(--border-color)', borderRadius: '4px', minHeight: '80px' }} />
           <button type="submit" style={{ alignSelf: 'flex-end' }}>Post Comment</button>
         </form>

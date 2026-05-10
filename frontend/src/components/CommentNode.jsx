@@ -4,20 +4,26 @@ import { createComment } from '../services/api';
 function CommentNode({ comment, postId, onReplySuccess }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyText, setReplyText] = useState('');
-  const [replyAuthor, setReplyAuthor] = useState(''); // Temporary until auth is hooked up
+  // const [replyAuthor, setReplyAuthor] = useState(''); // Temporary until auth is hooked up
 
-  const handleReplySubmit = async (e) => {
+const handleReplySubmit = async (e) => {
     e.preventDefault();
+    const currentUser = localStorage.getItem('username');
+
+    if (!currentUser) {
+        alert("You must be logged in to reply.");
+        return;
+    }
+
     try {
       await createComment(postId, {
         text: replyText,
-        author: replyAuthor,
-        parentId: comment.id // This makes it a nested reply!
+        author: currentUser,
+        parentId: comment.id 
       });
       setShowReplyForm(false);
       setReplyText('');
-      setReplyAuthor('');
-      onReplySuccess(); // Tell the parent page to refresh the comments
+      onReplySuccess(); 
     } catch (error) {
       console.error("Failed to post reply", error);
     }
@@ -48,14 +54,14 @@ function CommentNode({ comment, postId, onReplySuccess }) {
         {/* Reply Form */}
         {showReplyForm && (
           <form onSubmit={handleReplySubmit} style={{ marginTop: '10px', display: 'flex', gap: '10px', flexDirection: 'column' }}>
-            <input 
+            {/* <input 
               type="text" 
               placeholder="Your Name" 
               value={replyAuthor} 
               onChange={(e) => setReplyAuthor(e.target.value)}
               required
               style={{ padding: '8px', background: 'var(--surface-color)', color: 'white', border: 'none', borderRadius: '4px' }}
-            />
+            /> */}
             <textarea 
               placeholder="Write a reply..." 
               value={replyText} 
