@@ -23,3 +23,23 @@ export const createPost = async (postData) => {
         throw error;
     }
 };
+
+// Add this below your existing functions
+
+// Fetch a single post
+export const getPostById = async (id) => {
+    const response = await axios.get(`${API_URL}/${id}`);
+    return response.data;
+};
+
+// Fetch nested comments for a post
+export const getComments = async (postId, page = 0, size = 10) => {
+    const response = await axios.get(`${API_URL}/${postId}/comments?page=${page}&size=${size}`);
+    return response.data;
+};
+
+// Create a new comment (or reply if parentId is provided)
+export const createComment = async (postId, commentData) => {
+    const response = await axios.post(`${API_URL}/${postId}/comments`, commentData);
+    return response.data;
+};

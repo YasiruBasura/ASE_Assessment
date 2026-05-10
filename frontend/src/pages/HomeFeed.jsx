@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getPosts } from '../services/api';
+import { Link } from 'react-router-dom';
 
 function HomeFeed() {
   const [posts, setPosts] = useState([]);
@@ -33,7 +34,9 @@ function HomeFeed() {
       ) : (
         posts.map((post) => (
           <div key={post.id} style={{ marginTop: '20px', padding: '20px', backgroundColor: 'var(--surface-color)', borderRadius: '8px' }}>
-            <h3 style={{ color: 'var(--accent-color)' }}>{post.title}</h3>
+            <Link to={`/post/${post.id}`}>
+              <h3 style={{ color: 'var(--accent-color)' }}>{post.title}</h3>
+            </Link>
             
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '15px' }}>
               By {post.author} in {post.category} • {new Date(post.timestamp).toLocaleDateString()}
