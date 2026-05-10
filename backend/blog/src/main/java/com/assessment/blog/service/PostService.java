@@ -5,6 +5,8 @@ import com.assessment.blog.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class PostService {
@@ -16,8 +18,18 @@ public class PostService {
     }
 
     // Passes page and size directly to hit the pagination requirement
-    public Page<Post> getAllPosts(int page, int size) {
-        return postRepository.findAll(PageRequest.of(page, size));
+    public Page<Post> getAllPosts(int page, int size, String category, String tag) {
+        // Create a Pageable object, sorting by newest first
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
+
+        // Logic to choose the correct repository method based on the filters provided
+        if (category != null && !category.isEmpty()) {
+            return postRepository.findByCategory(category, pageable);
+        } else if (tag != null && !tag.isEmpty()) {
+            return postRepository.findByTagsContaining(tag, pageable);
+        } else {
+            return postRepository.findAll(pageable); // Default: Get all
+        }
     }
 
     public Post createPost(Post post) {

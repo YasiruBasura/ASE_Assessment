@@ -5,6 +5,7 @@ import com.assessment.blog.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -25,10 +26,13 @@ public class PostController {
 
     // GET: http://localhost:8080/api/posts?page=0&size=10
     @GetMapping
-    public Page<Post> getPosts(
+    public ResponseEntity<Page<Post>> getAllPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return postService.getAllPosts(page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String tag) {
+
+        return ResponseEntity.ok(postService.getAllPosts(page, size, category, tag));
     }
 
     // POST: http://localhost:8080/api/posts

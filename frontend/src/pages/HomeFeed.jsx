@@ -4,32 +4,55 @@ import { Link } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
+// --- ADDED THE NEW COMPONENT IMPORTS ---
+import FilterBar from '../components/FilterBar';
+import Pagination from '../components/Pagination';
+
 function HomeFeed() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [liveCounts, setLiveCounts] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [tagFilter, setTagFilter] = useState('');
 
+  // --- UPDATED TO RE-RUN WHEN FILTERS OR PAGE CHANGES ---
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [currentPage, categoryFilter, tagFilter]);
 
   const fetchPosts = async () => {
     try {
-      // Fetching page 0, size 10 to hit the pagination requirement
-      const data = await getPosts(0, 10); 
-      setPosts(data.content); // Extracting the array from Spring's Page object
+      // Pass the dynamic states to your API call
+      const data = await getPosts(currentPage, 5, categoryFilter, tagFilter); 
+      setPosts(data.content); 
+      setTotalPages(data.totalPages); // Store the total pages from the backend
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
   };
 
-  
-const [liveCounts, setLiveCounts] = useState({});
+  // --- HANDLERS FOR FILTERING ---
+  const handleCategoryChange = (newCategory) => {
+    setCategoryFilter(newCategory);
+    setCurrentPage(0); // Reset to first page on filter change
+  };
 
-  // --- WEBSOCKET FOR GLOBAL COUNTS ---
+  const handleTagChange = (newTag) => {
+    setTagFilter(newTag);
+    setCurrentPage(0); // Reset to first page on filter change
+  };
+
+  const handleClearFilters = () => {
+    setCategoryFilter('');
+    setTagFilter('');
+    setCurrentPage(0); // Reset to first page on filter clear
+  };
+
+  // --- WEBSOCKET FOR GLOBAL COUNTS (Unchanged) ---
   useEffect(() => {
-
-    // 1. Fetch the exact current snapshot immediately!
     import('../services/api').then(({ getGlobalLiveCounts }) => {
         getGlobalLiveCounts().then(setLiveCounts);
     });
@@ -39,7 +62,6 @@ const [liveCounts, setLiveCounts] = useState({});
     stompClient.debug = null;
 
     stompClient.connect({}, () => {
-      // Listen to the new global channel
       stompClient.subscribe('/topic/readers/all', (message) => {
         const countsMap = JSON.parse(message.body);
         setLiveCounts(countsMap);
@@ -53,6 +75,7 @@ const [liveCounts, setLiveCounts] = useState({});
     };
   }, []);
 
+
   if (loading) {
     return <div style={{ textAlign: 'center', marginTop: '100px' }}>Loading posts...</div>;
   }
@@ -60,9 +83,7 @@ const [liveCounts, setLiveCounts] = useState({});
   return (
     <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px' }}>
 
-      
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-       
         {localStorage.getItem('username') && (
           <Link to="/create-post">
             <button>+ Create Post</button>
@@ -71,9 +92,18 @@ const [liveCounts, setLiveCounts] = useState({});
       </div>
 
       <h1>Latest Posts</h1>
+
+      {/* --- INJECTED FILTER BAR --- */}
+      <FilterBar 
+        categoryFilter={categoryFilter}
+        tagFilter={tagFilter}
+        onCategoryChange={handleCategoryChange}
+        onTagChange={handleTagChange}
+        onClearFilters={handleClearFilters}
+      />
       
       {posts.length === 0 ? (
-        <p style={{ marginTop: '20px', color: 'var(--text-secondary)' }}>No posts found. Create one via Postman to see it here!</p>
+        <p style={{ marginTop: '20px', color: 'var(--text-secondary)' }}>No posts found.</p>
       ) : (
         posts.map((post) => (
           <div key={post.id} style={{ marginTop: '20px', padding: '20px', backgroundColor: 'var(--surface-color)', borderRadius: '8px' }}>
@@ -105,6 +135,14 @@ const [liveCounts, setLiveCounts] = useState({});
           </div>
         ))
       )}
+
+      {/* --- INJECTED PAGINATION --- */}
+      <Pagination 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        onPageChange={setCurrentPage} 
+      />
+
     </div>
   );
 }
