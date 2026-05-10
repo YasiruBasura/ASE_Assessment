@@ -16,6 +16,12 @@ public class PostController {
         this.postService = postService;
     }
 
+    // GET: http://localhost:8080/api/posts/1
+    @GetMapping("/{id}")
+    public Post getPost(@PathVariable Long id) {
+        return postService.getPostById(id);
+    }
+
     // GET: http://localhost:8080/api/posts?page=0&size=10
     @GetMapping
     public Page<Post> getPosts(
