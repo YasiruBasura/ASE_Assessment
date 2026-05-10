@@ -18,12 +18,14 @@ public class PostService {
     }
 
     // Passes page and size directly to hit the pagination requirement
-    public Page<Post> getAllPosts(int page, int size, String category, String tag) {
+    public Page<Post> getAllPosts(int page, int size, String category, String tag, String keyword) {
         // Create a Pageable object, sorting by newest first
         Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
 
         // Logic to choose the correct repository method based on the filters provided
-        if (category != null && !category.isEmpty()) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return postRepository.findByTitleContainingIgnoreCaseOrBodyContainingIgnoreCase(keyword, keyword, pageable);
+        }else if (category != null && !category.isEmpty()) {
             return postRepository.findByCategory(category, pageable);
         } else if (tag != null && !tag.isEmpty()) {
             return postRepository.findByTagsContaining(tag, pageable);

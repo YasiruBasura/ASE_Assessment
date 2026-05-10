@@ -30,9 +30,10 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String tag) {
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String keyword) {
 
-        return ResponseEntity.ok(postService.getAllPosts(page, size, category, tag));
+        return ResponseEntity.ok(postService.getAllPosts(page, size, category, tag, keyword));
     }
 
     // POST: http://localhost:8080/api/posts

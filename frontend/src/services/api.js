@@ -32,11 +32,12 @@ export const registerUser = async (username, password) => {
 
 // --- POSTS ---
 // Replace your existing getPosts function with this:
-export const getPosts = async (page = 0, size = 10, category = '', tag = '') => {
+export const getPosts = async (page = 0, size = 10, category = '', tag = '', keyword = '') => {
     // Build the query string dynamically
     let query = `?page=${page}&size=${size}`;
     if (category) query += `&category=${encodeURIComponent(category)}`;
     if (tag) query += `&tag=${encodeURIComponent(tag)}`;
+    if (keyword) query += `&keyword=${encodeURIComponent(keyword)}`;
 
     // Notice we use apiClient so we don't have to worry about the base URL!
     const response = await apiClient.get(`/posts${query}`);

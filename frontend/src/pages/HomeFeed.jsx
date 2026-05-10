@@ -16,16 +16,17 @@ function HomeFeed() {
   const [totalPages, setTotalPages] = useState(0);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   // --- UPDATED TO RE-RUN WHEN FILTERS OR PAGE CHANGES ---
   useEffect(() => {
     fetchPosts();
-  }, [currentPage, categoryFilter, tagFilter]);
+  }, [currentPage, categoryFilter, tagFilter, searchKeyword]);
 
   const fetchPosts = async () => {
     try {
       // Pass the dynamic states to your API call
-      const data = await getPosts(currentPage, 5, categoryFilter, tagFilter); 
+      const data = await getPosts(currentPage, 5, categoryFilter, tagFilter, searchKeyword); 
       setPosts(data.content); 
       setTotalPages(data.totalPages); // Store the total pages from the backend
       setLoading(false);
@@ -45,10 +46,16 @@ function HomeFeed() {
     setCurrentPage(0); // Reset to first page on filter change
   };
 
+  const handleSearchChange = (newKeyword) => {
+    setSearchKeyword(newKeyword);
+    setCurrentPage(0);
+  };
+
   const handleClearFilters = () => {
     setCategoryFilter('');
     setTagFilter('');
     setCurrentPage(0); // Reset to first page on filter clear
+    setSearchKeyword('');
   };
 
   // --- WEBSOCKET FOR GLOBAL COUNTS (Unchanged) ---
@@ -76,6 +83,8 @@ function HomeFeed() {
   }, []);
 
 
+
+
   if (loading) {
     return <div style={{ textAlign: 'center', marginTop: '100px' }}>Loading posts...</div>;
   }
@@ -97,8 +106,10 @@ function HomeFeed() {
       <FilterBar 
         categoryFilter={categoryFilter}
         tagFilter={tagFilter}
+        searchKeyword={searchKeyword} 
         onCategoryChange={handleCategoryChange}
         onTagChange={handleTagChange}
+        onSearchChange={handleSearchChange} 
         onClearFilters={handleClearFilters}
       />
       

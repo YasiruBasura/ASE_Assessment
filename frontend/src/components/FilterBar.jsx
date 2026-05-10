@@ -1,9 +1,17 @@
 import React from 'react';
 
-function FilterBar({ categoryFilter, tagFilter, onCategoryChange, onTagChange, onClearFilters }) {
+function FilterBar({ categoryFilter, tagFilter, searchKeyword, onCategoryChange, onTagChange, onSearchChange, onClearFilters }) {
   return (
     <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', padding: '15px', backgroundColor: 'var(--surface-color)', borderRadius: '8px' }}>
       
+      <input 
+            type="text" 
+            placeholder="Search titles and content..." 
+            value={searchKeyword}
+            onChange={(e) => onSearchChange(e.target.value)}
+            style={{ padding: '8px', borderRadius: '4px', background: 'var(--bg-color)', color: 'white', border: '1px solid var(--accent-color)', flexGrow: 1 }}
+        /> 
+
       <select 
         value={categoryFilter} 
         onChange={(e) => onCategoryChange(e.target.value)} 
@@ -17,6 +25,8 @@ function FilterBar({ categoryFilter, tagFilter, onCategoryChange, onTagChange, o
         <option value="Lifestyle">Lifestyle</option>
       </select>
 
+       
+
       <input 
         type="text" 
         placeholder="Filter by Tag (e.g., react)" 
@@ -24,6 +34,7 @@ function FilterBar({ categoryFilter, tagFilter, onCategoryChange, onTagChange, o
         onChange={(e) => onTagChange(e.target.value)}
         style={{ padding: '8px', borderRadius: '4px', background: 'var(--bg-color)', color: 'white', border: '1px solid var(--border-color)' }}
       />
+      
 
       {/* Only show the Clear button if a filter is actually active! */}
       {(categoryFilter || tagFilter) && (
