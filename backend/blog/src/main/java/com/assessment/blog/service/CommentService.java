@@ -11,16 +11,19 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 @Service
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository, SimpMessagingTemplate messagingTemplate) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public Page<Comment> getCommentTreeForPost(Long postId, int page, int size) {
@@ -53,6 +56,11 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         comment.setPost(post);
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+
+        // BROADCAST TO WEBSOCKET: "Hey everyone in room /topic/posts/{postId}, here is a new comment!"
+        messagingTemplate.convertAndSend("/topic/posts/" + postId + "/comments", savedComment);
+
+        return savedComment;
     }
 }
