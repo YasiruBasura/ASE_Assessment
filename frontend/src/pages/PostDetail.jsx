@@ -32,6 +32,12 @@ function PostDetail() {
 
   // --- 2. WEBSOCKET CONNECTION ---
   useEffect(() => {
+    // 1. Fetch the exact current viewer count immediately!
+    import('../services/api').then(({ getPostLiveCount }) => {
+        getPostLiveCount(id).then(setReaderCount);
+    });
+
+    // 2. Then connect to WebSocket to listen for changes
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClient.debug = null; // Hides heavy logs in the browser console

@@ -56,3 +56,14 @@ export const createComment = async (postId, commentData) => {
     const response = await apiClient.post(`/posts/${postId}/comments`, commentData);
     return response.data;
 };
+
+// --- PRESENCE / LIVE COUNTS ---
+export const getGlobalLiveCounts = async () => {
+    const response = await axios.get(`${API_URL}/presence/posts`);
+    return response.data;
+};
+
+export const getPostLiveCount = async (postId) => {
+    const response = await axios.get(`${API_URL}/presence/posts/${postId}`);
+    return response.data;
+};

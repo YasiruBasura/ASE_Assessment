@@ -28,6 +28,12 @@ const [liveCounts, setLiveCounts] = useState({});
 
   // --- WEBSOCKET FOR GLOBAL COUNTS ---
   useEffect(() => {
+
+    // 1. Fetch the exact current snapshot immediately!
+    import('../services/api').then(({ getGlobalLiveCounts }) => {
+        getGlobalLiveCounts().then(setLiveCounts);
+    });
+    
     const socket = new SockJS('http://localhost:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClient.debug = null;

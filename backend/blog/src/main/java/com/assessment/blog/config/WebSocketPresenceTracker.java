@@ -91,4 +91,19 @@ public class WebSocketPresenceTracker {
         // Shout the map to a new global channel
         messagingTemplate.convertAndSend("/topic/readers/all", globalCounts);
     }
+
+    public int getActiveReadersForPost(String postId) {
+        return activeReaders.getOrDefault(postId, Collections.emptySet()).size();
+    }
+
+    public Map<String, Integer> getGlobalReaderCounts() {
+        Map<String, Integer> globalCounts = new HashMap<>();
+        activeReaders.forEach((id, sessions) -> {
+            if (!sessions.isEmpty()) {
+                globalCounts.put(id, sessions.size());
+            }
+        });
+        return globalCounts;
+    }
+
 }
