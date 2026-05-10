@@ -1,10 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import SockJS from 'sockjs-client'; 
+import Stomp from 'stompjs';
 
 function Navbar() {
   const navigate = useNavigate();
   const currentUser = localStorage.getItem('username');
+  
+  // State for our popup notification
+  const [notification, setNotification] = useState('');
+  // --- PRIVATE NOTIFICATION LISTENER ---
+  useEffect(() => {
+    if (!currentUser) return; // Don't connect if not logged in
 
+    const socket = new SockJS('http://localhost:8080/ws');
+    const stompClient = Stomp.over(socket);
+    stompClient.debug = null;
+
+    stompClient.connect({}, () => {
+      // Listen to the private channel specifically for this user
+      stompClient.subscribe(`/topic/notifications/${currentUser}`, (message) => {
+        // Show the notification
+        setNotification(message.body);
+        
+        // Auto-hide the notification after 5 seconds
+        setTimeout(() => {
+          setNotification('');
+        }, 5000);
+      });
+    });
+
+    return () => {
+      if (stompClient.connected) stompClient.disconnect();
+    };
+  }, [currentUser]);
   const handleLogout = () => {
     // Clear the JWT token and username from the browser
     localStorage.removeItem('token');
@@ -14,6 +43,7 @@ function Navbar() {
     navigate('/');
     window.location.reload(); 
   };
+
 
   return (
     <nav style={{ 
@@ -72,6 +102,34 @@ function Navbar() {
           </>
         )}
       </div>
+
+      {/* --- THE TOAST NOTIFICATION UI --- */}
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: '80px',
+          right: '20px',
+          backgroundColor: 'var(--accent-color)',
+          color: '#000',
+          padding: '15px 25px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+          fontWeight: 'bold',
+          zIndex: 2000,
+          animation: 'slideIn 0.3s ease-out'
+        }}>
+          🔔 {notification}
+          
+          {/* A little X to dismiss it early */}
+          <span 
+            onClick={() => setNotification('')} 
+            style={{ marginLeft: '15px', cursor: 'pointer', opacity: 0.7 }}
+          >
+            ✕
+          </span>
+        </div>
+      )}
+      
     </nav>
   );
 }
