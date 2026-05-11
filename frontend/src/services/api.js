@@ -25,13 +25,12 @@ export const loginUser = async (username, password) => {
 };
 
 export const registerUser = async (username, password) => {
-    // Notice we use the raw axios here, not apiClient, because we don't need a token to register!
+    // We use the raw axios here, not apiClient.
     const response = await axios.post(`${API_URL}/auth/register`, { username, password });
     return response.data; 
 };
 
 // --- POSTS ---
-// Replace your existing getPosts function with this:
 export const getPosts = async (page = 0, size = 10, category = '', tag = '', keyword = '') => {
     // Build the query string dynamically
     let query = `?page=${page}&size=${size}`;
@@ -39,7 +38,7 @@ export const getPosts = async (page = 0, size = 10, category = '', tag = '', key
     if (tag) query += `&tag=${encodeURIComponent(tag)}`;
     if (keyword) query += `&keyword=${encodeURIComponent(keyword)}`;
 
-    // Notice we use apiClient so we don't have to worry about the base URL!
+    // We use apiClient so we don't have to worry about the base URL!
     const response = await apiClient.get(`/posts${query}`);
     return response.data;
 };

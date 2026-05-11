@@ -17,7 +17,7 @@ public class CommentController {
     private final SimpMessagingTemplate messagingTemplate;
     private final PostRepository postRepository;
 
-    // We inject the MessagingTemplate and PostRepository here
+    // Inject the MessagingTemplate and PostRepository
     public CommentController(CommentService commentService,
                              SimpMessagingTemplate messagingTemplate,
                              PostRepository postRepository) {

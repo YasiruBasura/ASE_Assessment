@@ -4,7 +4,7 @@ import { getPostById, getComments, deletePost } from '../services/api';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
-// Import our new modular components
+
 import PostViewer from '../components/PostViewer';
 import PostEditor from '../components/PostEditor';
 import CommentSection from '../components/CommentSection';
@@ -15,7 +15,7 @@ function PostDetail() {
   const navigate = useNavigate();
   const currentUser = localStorage.getItem('username');
   
-  // State is now much smaller!
+ 
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [readerCount, setReaderCount] = useState(1);

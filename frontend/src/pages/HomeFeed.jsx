@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
-// --- ADDED THE NEW COMPONENT IMPORTS ---
+
 import FilterBar from '../components/FilterBar';
 import Pagination from '../components/Pagination';
 
@@ -25,7 +25,7 @@ function HomeFeed() {
 
   const fetchPosts = async () => {
     try {
-      // Pass the dynamic states to your API call
+      // Pass the dynamic states to the API call
       const data = await getPosts(currentPage, 5, categoryFilter, tagFilter, searchKeyword); 
       setPosts(data.content); 
       setTotalPages(data.totalPages); // Store the total pages from the backend
@@ -58,7 +58,7 @@ function HomeFeed() {
     setSearchKeyword('');
   };
 
-  // --- WEBSOCKET FOR GLOBAL COUNTS (Unchanged) ---
+  // --- WEBSOCKET FOR GLOBAL COUNTS  ---
   useEffect(() => {
     import('../services/api').then(({ getGlobalLiveCounts }) => {
         getGlobalLiveCounts().then(setLiveCounts);

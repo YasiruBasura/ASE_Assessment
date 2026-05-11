@@ -80,7 +80,7 @@ public class WebSocketPresenceTracker {
         // We broadcast this to a dedicated "readers" channel
         messagingTemplate.convertAndSend("/topic/posts/" + postId + "/readers", count);
 
-        // 2. NEW CODE: Broadcast a global map for the Home Feed!
+        // Broadcast a global map for the Home Feed!
         Map<String, Integer> globalCounts = new HashMap<>();
         activeReaders.forEach((id, sessions) -> {
             if (!sessions.isEmpty()) {

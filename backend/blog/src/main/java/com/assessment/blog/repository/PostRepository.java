@@ -15,6 +15,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // Handles the requirement: Filter posts by tag with pagination
     Page<Post> findByTagsContaining(String tag, Pageable pageable);
 
-    // Handles the BONUS: Search posts by keyword (checks title and body)
+    // Handles the requirement: Search posts by keyword (checks title and body)
     Page<Post> findByTitleContainingIgnoreCaseOrBodyContainingIgnoreCase(String title, String body, Pageable pageable);
 }

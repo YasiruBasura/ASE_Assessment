@@ -44,7 +44,7 @@ public class AuthController {
 
         User newUser = new User();
         newUser.setUsername(authRequest.getUsername());
-        // Always encode passwords before saving!
+        // Encode passwords before saving!
         newUser.setPassword(passwordEncoder.encode(authRequest.getPassword()));
         userRepository.save(newUser);
 
@@ -62,7 +62,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid username or password");
         }
 
-        // If we get here, the user is authenticated. Let's generate their token.
+        // The user is authenticated. Then generates their token.
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
 

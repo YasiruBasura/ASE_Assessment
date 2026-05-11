@@ -35,7 +35,7 @@ public class Comment {
     @CreationTimestamp
     private LocalDateTime timestamp;
 
-    // @Transient means "Don't save this in MySQL, just use it in Java"
+
     @Transient
     private List<Comment> replies = new ArrayList<>();
 }

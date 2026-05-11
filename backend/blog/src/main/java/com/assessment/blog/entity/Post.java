@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Data // Lombok handles getters, setters, and constructors
+@Data
 @Table(name = "posts")
 public class Post {
 
@@ -24,7 +24,7 @@ public class Post {
     private String body;
 
     @Column(nullable = false)
-    private String author; // We will tie this to the User entity later
+    private String author;
 
     @Column(nullable = false)
     private String category;
@@ -36,7 +36,7 @@ public class Post {
     private LocalDateTime timestamp; // Auto-generates the creation time
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // This prevents a massive infinite loop when sending data to React!
+    @JsonIgnore // Prevents a massive infinite loop when sending data to React!
     private List<Comment> comments = new ArrayList<>();
 
 }

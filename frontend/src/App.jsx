@@ -9,13 +9,16 @@ import Navbar from './components/Navbar';
 function App() {
   return (
     <Router>
-      <Navbar />
+      <Navbar /> 
       <Routes>
-        <Route path="/login" element={<Login />} />
+        {/* Main App Routes */}
         <Route path="/" element={<HomeFeed />} />
         <Route path="/post/:id" element={<PostDetail />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/create-post" element={<CreatePost />} />
+
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

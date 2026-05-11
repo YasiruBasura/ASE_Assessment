@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    // Spring Data JPA magically writes the SQL query for this based on the method name!
+    // Spring Data JPA  writes the SQL query for this based on the method name!
     Optional<User> findByUsername(String username);
 }
